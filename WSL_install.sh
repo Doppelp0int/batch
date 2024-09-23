@@ -22,7 +22,7 @@ $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sourc
 # Docker installieren
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
+sudo apt-get install net-tools -y
 # Docker-Post-Installation Schritte: Benutzer zur Docker-Gruppe hinzufügen
 sudo usermod -aG docker ubuntu
 
