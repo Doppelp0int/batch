@@ -19,16 +19,15 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 # Benutzer zur Docker-Gruppe hinzufügen
 sudo usermod -aG docker $USER
 
-# Portainer installieren
-sudo docker volume create portainer_data
-sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
-  -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
-
 # Prüfen, ob Portainer läuft
 if sudo docker ps | grep -q portainer; then
   echo "Portainer ist gestartet und erreichbar unter: https://localhost:9443"
 else
-  echo "Portainer konnte nicht gestartet werden. Bitte überprüfen Sie den Docker-Container."
+  echo "Portainer konnte nicht gefunden werden. portainer wird installiert"
+  # Portainer installieren
+sudo docker volume create portainer_data
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 fi
 
 # Hinweis für Neustart oder Abmeldung
