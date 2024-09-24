@@ -21,9 +21,15 @@ sudo usermod -aG docker $USER
 
 # Prüfen, ob Portainer läuft
 if sudo docker ps | grep -q portainer; then
+  echo "********************************************************************"
   echo "Portainer ist gestartet und erreichbar unter: https://localhost:9443"
+  echo "********************************************************************"
+
 else
+  echo "********************************************************************"
   echo "Portainer konnte nicht gefunden werden. portainer wird installiert"
+  echo "********************************************************************"
+
   # Portainer installieren
 sudo docker volume create portainer_data
 sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
@@ -31,4 +37,4 @@ sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
 fi
 
 # Hinweis für Neustart oder Abmeldung
-echo "Docker und Portainer wurden installiert. Ab- und wieder anmelden oder ein Neustart ist erforderlich, um die Docker-Gruppenänderung zu übernehmen."
+echo "Docker und Portainer wurden installiert."
