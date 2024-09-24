@@ -19,6 +19,10 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 # Benutzer zur Docker-Gruppe hinzufügen
 sudo usermod -aG docker $USER
 
+sudo docker volume create portainer_data
+sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+
 # Prüfen, ob Portainer läuft
 if sudo docker ps | grep -q portainer; then
   echo "********************************************************************"
