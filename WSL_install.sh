@@ -3,10 +3,13 @@
 sudo apt-get update && sudo apt-get upgrade -y
 
 # Docker installieren
-sudo apt-get update
-sudo apt-get install ca-certificates curl
+sudo apt-get install ca-certificates curl -y
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+if [ $? -ne 0 ]; then
+  echo "Fehler beim Herunterladen des Docker GPG-Schlüssels."
+  exit 1
+fi
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
@@ -14,29 +17,35 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin net-tools -y
+
 # Benutzer zur Docker-Gruppe hinzufügen
 sudo usermod -aG docker $USER
 
+# Wartezeit zur Aktivierung der neuen Gruppenzugehörigkeit
+newgrp docker
+
+# Portainer Installation
 sudo docker volume create portainer_data
 sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
   -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 
 # Prüfen, ob Portainer läuft
+sleep 5  # Kurze Wartezeit, um den Container zu starten
 if sudo docker ps | grep -q portainer; then
   echo "********************************************************************"
   echo "Portainer ist gestartet und erreichbar unter: https://localhost:9443"
   echo "********************************************************************"
-
 else
   echo "********************************************************************"
-  echo "Portainer konnte nicht gefunden werden. portainer wird installiert"
+  echo "Portainer konnte nicht gefunden werden. Installation wird erneut versucht."
   echo "********************************************************************"
-  sudo docker volume create portainer_data
+  sudo docker rm -f portainer
   sudo docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always \
     -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 fi
 
 # Hinweis für Neustart oder Abmeldung
-echo "Docker und Portainer wurden installiert."
+echo "Docker und Portainer wurden installiert. Bitte abmelden oder Neustart durchführen, um die Docker-Gruppe zu aktivieren."
